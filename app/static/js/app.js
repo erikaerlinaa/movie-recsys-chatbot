@@ -65,7 +65,7 @@ function renderCatalog(recommendations) {
       const badge = card.querySelector(".match-badge");
       if (badge) badge.remove();
     });
-    catalogSubtitle.textContent = "Semua judul";
+    catalogSubtitle.textContent = "All titles";
     return;
   }
 
@@ -103,7 +103,7 @@ function renderCatalog(recommendations) {
   });
   sorted.forEach((card) => catalogGrid.appendChild(card));
 
-  catalogSubtitle.textContent = `${recommendations.length} rekomendasi ditemukan`;
+  catalogSubtitle.textContent = `${recommendations.length} recommendations found`;
 }
 
 async function sendMessage(text) {
@@ -112,7 +112,7 @@ async function sendMessage(text) {
 
   const typing = document.createElement("div");
   typing.className = "msg bot";
-  typing.innerHTML = '<div class="bubble">CineBot sedang mengetik...</div>';
+  typing.innerHTML = '<div class="bubble">CineBot is typing...</div>';
   chatMessages.appendChild(typing);
   chatMessages.scrollTop = chatMessages.scrollHeight;
 
@@ -128,7 +128,7 @@ async function sendMessage(text) {
     renderCatalog(data.recommendations);
   } catch (err) {
     typing.remove();
-    addMessage("Waduh, ada gangguan koneksi. Coba lagi ya.", "bot");
+    addMessage("Oops, connection trouble. Please try again.", "bot");
   }
 }
 

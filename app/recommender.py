@@ -8,10 +8,16 @@ from sklearn.metrics.pairwise import cosine_similarity
 DATA_PATH = Path(__file__).parent / "data" / "catalog.json"
 
 STOPWORDS = {
+    # Indonesian
     "aku", "saya", "gue", "gw", "suka", "mau", "pengen", "cari", "carikan",
-    "film", "movie", "yang", "kayak", "seperti", "mirip", "dong", "nih",
-    "genre", "tolong", "kasih", "rekomendasi", "rekomendasiin", "tontonan",
-    "buat", "untuk", "ada", "gak", "nggak", "the", "and", "of", "a", "an",
+    "yang", "kayak", "seperti", "mirip", "dong", "nih", "tolong", "kasih",
+    "rekomendasi", "rekomendasiin", "tontonan", "buat", "untuk", "ada",
+    "gak", "nggak",
+    # English
+    "i", "me", "my", "im", "like", "love", "want", "looking", "for",
+    "find", "recommend", "recommendation", "movie", "movies", "film",
+    "films", "genre", "please", "some", "give", "show", "watch", "to",
+    "the", "and", "of", "a", "an", "with",
 }
 
 

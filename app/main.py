@@ -19,13 +19,13 @@ templates = Jinja2Templates(directory=BASE_DIR / "templates")
 recommender = MovieRecommender()
 
 GREETINGS = [
-    "Halo! Aku CineBot 🎬 Ceritain mood kamu hari ini, atau film apa yang kamu suka?",
-    "Hai! Mau nonton apa hari ini? Kasih tau genre atau judul film favoritmu.",
+    "Hi! I'm CineBot 🎬 Tell me your mood today, or what movies you like.",
+    "Hey there! What do you feel like watching? Give me a genre or a favorite title.",
 ]
 
 NO_MATCH_REPLIES = [
-    "Hmm, belum ketemu yang cocok banget. Coba sebutin genre favoritmu, misalnya 'action' atau 'romance'?",
-    "Aku belum nangkep maksudnya nih. Coba ceritain lebih detail film seperti apa yang kamu mau tonton.",
+    "Hmm, I couldn't find a strong match. Try naming a genre you like, e.g. 'action' or 'romance'?",
+    "I didn't quite catch that. Try describing in more detail what kind of movie you're in the mood for.",
 ]
 
 
@@ -46,7 +46,7 @@ async def index(request: Request):
 async def chat(payload: ChatRequest):
     message = payload.message.strip()
     if not message:
-        return {"reply": "Coba ketik sesuatu dulu ya \U0001F642", "recommendations": []}
+        return {"reply": "Try typing something first \U0001F642", "recommendations": []}
 
     recommendations = recommender.recommend(message, top_n=6)
 
@@ -55,10 +55,10 @@ async def chat(payload: ChatRequest):
 
     top = recommendations[0]
     genres = recommender.genres_mentioned(message)
-    genre_txt = f" bertema {', '.join(genres)}" if genres else ""
+    genre_txt = f" in {', '.join(genres)}" if genres else ""
     reply = (
-        f"Nih beberapa rekomendasi{genre_txt} buat kamu! "
-        f"Yang paling cocok: **{top['title']}** ({top['match']}% match)."
+        f"Here are some recommendations{genre_txt} for you! "
+        f"Top pick: **{top['title']}** ({top['match']}% match)."
     )
     return {"reply": reply, "recommendations": recommendations}
 

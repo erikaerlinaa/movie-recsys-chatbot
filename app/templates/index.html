@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="id">
+<html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -13,14 +13,14 @@
   <div id="onboarding" class="modal-overlay">
     <div class="modal">
       <div class="modal-logo">CINE<span>MATCH</span></div>
-      <h2>Selamat datang 👋</h2>
-      <p class="modal-sub">Cara pakai CineMatch cuma 3 langkah:</p>
+      <h2>Welcome 👋</h2>
+      <p class="modal-sub">Using CineMatch takes just 3 steps:</p>
       <ol class="modal-steps">
-        <li><span class="step-num">1</span> Ceritain di chat kiri film / mood / genre yang kamu suka (mis. <i>"action kayak John Wick"</i>).</li>
-        <li><span class="step-num">2</span> CineBot bakal balas dan mem-filter katalog di kanan sesuai obrolanmu.</li>
-        <li><span class="step-num">3</span> Tiap poster punya badge <b>% match</b> — makin tinggi, makin cocok sama request kamu.</li>
+        <li><span class="step-num">1</span> Tell the chat on the left the movie / mood / genre you like (e.g. <i>"action like John Wick"</i>).</li>
+        <li><span class="step-num">2</span> CineBot replies and filters the catalog on the right based on what you said.</li>
+        <li><span class="step-num">3</span> Every poster gets a <b>% match</b> badge — the higher it is, the better it fits your request.</li>
       </ol>
-      <button id="onboarding-close" class="modal-btn">Mulai Nonton</button>
+      <button id="onboarding-close" class="modal-btn">Start Watching</button>
     </div>
   </div>
 
@@ -55,29 +55,35 @@
             id="chat-input"
             type="text"
             autocomplete="off"
-            placeholder="Ceritain film / genre favoritmu..."
+            placeholder="Tell me a movie / genre you like..."
           />
-          <button type="submit" aria-label="Kirim">➤</button>
+          <button type="submit" aria-label="Send">➤</button>
         </form>
         <div class="suggestions">
-          <button class="chip" data-q="aku suka action kayak John Wick">Action seperti John Wick</button>
-          <button class="chip" data-q="rekomendasi film romance yang bikin baper">Romance bikin baper</button>
-          <button class="chip" data-q="film animasi keluarga">Animasi keluarga</button>
-          <button class="chip" data-q="horror menegangkan">Horror menegangkan</button>
+          <button class="chip" data-q="I like action movies like John Wick">Action like John Wick</button>
+          <button class="chip" data-q="recommend a romance movie that makes me emotional">Romance that hits hard</button>
+          <button class="chip" data-q="family animation movies">Family animation</button>
+          <button class="chip" data-q="intense horror movies">Intense horror</button>
         </div>
       </section>
 
       <!-- RIGHT: CATALOG -->
       <section class="catalog-panel">
         <div class="catalog-header">
-          <h2>Katalog</h2>
-          <span id="catalog-subtitle" class="catalog-subtitle">Semua judul</span>
+          <h2>Catalog</h2>
+          <span id="catalog-subtitle" class="catalog-subtitle">All titles</span>
         </div>
         <div id="catalog-grid" class="catalog-grid">
           {% for movie in catalog %}
-          <article class="card" data-id="{{ movie.id }}">
+          <article class="card" data-id="{{ movie.id }}" data-genre="{{ movie.genres[0] | lower }}">
             <div class="poster-wrap">
-              <img src="{{ movie.poster }}" alt="{{ movie.title }}" loading="lazy" />
+              <div class="poster-fallback">
+                <span class="poster-icon">🎬</span>
+                <span class="poster-title">{{ movie.title }}</span>
+              </div>
+              <div class="poster-overlay">
+                <p class="poster-desc">{{ movie.description }}</p>
+              </div>
             </div>
             <div class="card-body">
               <h3 class="card-title">{{ movie.title }}</h3>
