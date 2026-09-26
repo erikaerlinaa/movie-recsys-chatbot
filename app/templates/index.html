@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CineMatch — Movie Recommendation Chatbot</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/css/style.css" />
+</head>
+<body>
+  <div id="onboarding" class="modal-overlay">
+    <div class="modal">
+      <div class="modal-logo">CINE<span>MATCH</span></div>
+      <h2>Selamat datang 👋</h2>
+      <p class="modal-sub">Cara pakai CineMatch cuma 3 langkah:</p>
+      <ol class="modal-steps">
+        <li><span class="step-num">1</span> Ceritain di chat kiri film / mood / genre yang kamu suka (mis. <i>"action kayak John Wick"</i>).</li>
+        <li><span class="step-num">2</span> CineBot bakal balas dan mem-filter katalog di kanan sesuai obrolanmu.</li>
+        <li><span class="step-num">3</span> Tiap poster punya badge <b>% match</b> — makin tinggi, makin cocok sama request kamu.</li>
+      </ol>
+      <button id="onboarding-close" class="modal-btn">Mulai Nonton</button>
+    </div>
+  </div>
+
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark">🎬</span>
+        <span class="brand-name">CineMatch</span>
+      </div>
+      <span class="brand-tag">AI-powered movie recommendations</span>
+    </header>
+
+    <main class="layout">
+      <!-- LEFT: CHAT -->
+      <section class="chat-panel">
+        <div class="chat-header">
+          <div class="bot-avatar">🤖</div>
+          <div>
+            <div class="bot-name">CineBot</div>
+            <div class="bot-status"><span class="dot"></span> online</div>
+          </div>
+        </div>
+
+        <div id="chat-messages" class="chat-messages">
+          <div class="msg bot">
+            <div class="bubble">{{ greeting }}</div>
+          </div>
+        </div>
+
+        <form id="chat-form" class="chat-input-row">
+          <input
+            id="chat-input"
+            type="text"
+            autocomplete="off"
+            placeholder="Ceritain film / genre favoritmu..."
+          />
+          <button type="submit" aria-label="Kirim">➤</button>
+        </form>
+        <div class="suggestions">
+          <button class="chip" data-q="aku suka action kayak John Wick">Action seperti John Wick</button>
+          <button class="chip" data-q="rekomendasi film romance yang bikin baper">Romance bikin baper</button>
+          <button class="chip" data-q="film animasi keluarga">Animasi keluarga</button>
+          <button class="chip" data-q="horror menegangkan">Horror menegangkan</button>
+        </div>
+      </section>
+
+      <!-- RIGHT: CATALOG -->
+      <section class="catalog-panel">
+        <div class="catalog-header">
+          <h2>Katalog</h2>
+          <span id="catalog-subtitle" class="catalog-subtitle">Semua judul</span>
+        </div>
+        <div id="catalog-grid" class="catalog-grid">
+          {% for movie in catalog %}
+          <article class="card" data-id="{{ movie.id }}">
+            <div class="poster-wrap">
+              <img src="{{ movie.poster }}" alt="{{ movie.title }}" loading="lazy" />
+            </div>
+            <div class="card-body">
+              <h3 class="card-title">{{ movie.title }}</h3>
+              <div class="card-meta">{{ movie.year }} · {{ movie.genres | join(', ') }}</div>
+              <div class="card-rating">⭐ {{ movie.rating }}</div>
+            </div>
+          </article>
+          {% endfor %}
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="/static/js/app.js"></script>
+</body>
+</html>
