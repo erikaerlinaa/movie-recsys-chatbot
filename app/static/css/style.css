@@ -101,6 +101,55 @@ html, body {
 .bot-status { font-size: 12px; color: var(--text-dim); display: flex; align-items: center; gap: 5px; }
 .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--match-high); display: inline-block; }
 
+/* ---------------- AI PIPELINE STRIP ---------------- */
+.ai-pipeline {
+  padding: 12px 18px 14px;
+  border-bottom: 1px solid var(--border);
+  background: linear-gradient(180deg, rgba(229, 9, 20, 0.06), transparent);
+}
+.pipeline-title {
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: var(--text-dim);
+  margin-bottom: 8px;
+}
+.pipeline-steps {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.pstep {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  flex: 1;
+  padding: 6px 2px;
+  border-radius: 10px;
+  transition: background 0.25s ease, transform 0.25s ease;
+}
+.pstep-icon {
+  font-size: 15px;
+  opacity: 0.45;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+.pstep-label {
+  font-size: 9.5px;
+  color: var(--text-dim);
+  transition: color 0.25s ease;
+}
+.pstep-arrow { color: var(--border); font-size: 12px; }
+
+.pstep.active {
+  background: rgba(229, 9, 20, 0.12);
+  transform: translateY(-1px);
+}
+.pstep.active .pstep-icon { opacity: 1; transform: scale(1.15); }
+.pstep.active .pstep-label { color: var(--accent-2); font-weight: 600; }
+.pstep.done .pstep-icon { opacity: 0.85; }
+.pstep.done .pstep-label { color: var(--match-high); }
+
 .chat-messages {
   flex: 1;
   overflow-y: auto;
@@ -236,13 +285,26 @@ html, body {
   position: relative;
   aspect-ratio: 2/3;
   overflow: hidden;
+  background: #1a1e28;
 }
 
-/* Generated poster art — no external images, always renders */
+.poster-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  z-index: 1;
+  transition: transform 0.3s ease;
+}
+.card:hover .poster-img { transform: scale(1.05); }
+
+/* Generated poster art fallback — shown only if the real poster 404s */
 .poster-fallback {
   width: 100%;
   height: 100%;
-  display: flex;
+  display: none;
   flex-direction: column;
   align-items: center;
   justify-content: center;
@@ -251,6 +313,7 @@ html, body {
   text-align: center;
   position: relative;
 }
+.poster-fallback.show { display: flex; }
 .poster-fallback::before {
   content: "";
   position: absolute;
@@ -294,11 +357,13 @@ html, body {
 .poster-overlay {
   position: absolute;
   inset: 0;
-  z-index: 2;
-  background: rgba(6, 8, 12, 0.88);
+  z-index: 3;
+  background: rgba(6, 8, 12, 0.9);
   padding: 14px;
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  gap: 10px;
   opacity: 0;
   transform: translateY(6px);
   transition: opacity 0.2s ease, transform 0.2s ease;
@@ -311,26 +376,59 @@ html, body {
   line-height: 1.5;
   color: var(--text);
   display: -webkit-box;
-  -webkit-line-clamp: 7;
+  -webkit-line-clamp: 6;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+.matched-terms {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+.matched-terms:empty { display: none; }
+.term-tag {
+  font-size: 10px;
+  padding: 2px 7px;
+  border-radius: 10px;
+  background: rgba(229, 9, 20, 0.18);
+  border: 1px solid rgba(229, 9, 20, 0.5);
+  color: #ff8a8f;
+}
+
+/* thin similarity bar along the bottom edge of the poster */
+.match-fill {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 4px;
+  z-index: 4;
+  background: linear-gradient(90deg, var(--match-mid), var(--match-high));
+  transition: width 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  width: 0%;
 }
 
 .match-badge {
   position: absolute;
   top: 8px;
   right: 8px;
-  z-index: 3;
+  z-index: 4;
   padding: 4px 9px;
   border-radius: 20px;
   font-size: 12px;
   font-weight: 700;
   color: #08110a;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  animation: badge-pop 0.35s ease;
 }
 .match-badge.high { background: var(--match-high); }
 .match-badge.mid { background: var(--match-mid); }
 .match-badge.low { background: var(--match-low); color: #fff; }
+
+@keyframes badge-pop {
+  from { transform: scale(0.6); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
 
 .card-body { padding: 10px 12px 14px; }
 .card-title {

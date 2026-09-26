@@ -64,20 +64,27 @@ function renderCatalog(recommendations) {
       card.classList.remove("dimmed", "highlight");
       const badge = card.querySelector(".match-badge");
       if (badge) badge.remove();
+      const fill = card.querySelector(".match-fill");
+      if (fill) fill.style.width = "0%";
+      const terms = card.querySelector(".matched-terms");
+      if (terms) terms.innerHTML = "";
     });
     catalogSubtitle.textContent = "All titles";
     return;
   }
 
-  const matchById = {};
-  recommendations.forEach((r) => (matchById[r.id] = r.match));
+  const dataById = {};
+  recommendations.forEach((r) => (dataById[r.id] = r));
 
   cards.forEach((card) => {
     const id = Number(card.dataset.id);
     const posterWrap = card.querySelector(".poster-wrap");
+    const fill = card.querySelector(".match-fill");
+    const terms = card.querySelector(".matched-terms");
     let badge = card.querySelector(".match-badge");
 
-    if (id in matchById) {
+    if (id in dataById) {
+      const rec = dataById[id];
       card.classList.remove("dimmed");
       card.classList.add("highlight");
       if (!badge) {
@@ -85,25 +92,70 @@ function renderCatalog(recommendations) {
         badge.className = "match-badge";
         posterWrap.appendChild(badge);
       }
-      const match = matchById[id];
-      badge.textContent = `${match}% match`;
-      badge.className = `match-badge ${matchClass(match)}`;
+      badge.textContent = `${rec.match}% match`;
+      badge.className = `match-badge ${matchClass(rec.match)}`;
+
+      if (fill) {
+        fill.style.width = "0%";
+        requestAnimationFrame(() => {
+          fill.style.width = `${Math.min(rec.match, 100)}%`;
+        });
+      }
+
+      if (terms) {
+        terms.innerHTML = "";
+        (rec.matched_terms || []).forEach((t) => {
+          const tag = document.createElement("span");
+          tag.className = "term-tag";
+          tag.textContent = t;
+          terms.appendChild(tag);
+        });
+      }
     } else {
       card.classList.add("dimmed");
       card.classList.remove("highlight");
       if (badge) badge.remove();
+      if (fill) fill.style.width = "0%";
+      if (terms) terms.innerHTML = "";
     }
   });
 
   // reorder: matched first, sorted by match desc
   const sorted = [...cards].sort((a, b) => {
-    const ma = matchById[Number(a.dataset.id)] ?? -1;
-    const mb = matchById[Number(b.dataset.id)] ?? -1;
+    const ma = dataById[Number(a.dataset.id)]?.match ?? -1;
+    const mb = dataById[Number(b.dataset.id)]?.match ?? -1;
     return mb - ma;
   });
   sorted.forEach((card) => catalogGrid.appendChild(card));
 
   catalogSubtitle.textContent = `${recommendations.length} recommendations found`;
+}
+
+// ---------- "How CineBot thinks" pipeline animation ----------
+const pipelineSteps = ["parse", "vectorize", "compare", "rank"];
+
+function runPipelineAnimation() {
+  return new Promise((resolve) => {
+    const els = pipelineSteps.map((s) =>
+      document.querySelector(`.pstep[data-step="${s}"]`)
+    );
+    els.forEach((el) => el.classList.remove("active", "done"));
+
+    let i = 0;
+    const stepDelay = 320;
+
+    function tick() {
+      if (i > 0) els[i - 1].classList.replace("active", "done");
+      if (i < els.length) {
+        els[i].classList.add("active");
+        i += 1;
+        setTimeout(tick, stepDelay);
+      } else {
+        resolve();
+      }
+    }
+    tick();
+  });
 }
 
 async function sendMessage(text) {
@@ -117,11 +169,14 @@ async function sendMessage(text) {
   chatMessages.scrollTop = chatMessages.scrollHeight;
 
   try {
-    const res = await fetch("/api/chat", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message: text }),
-    });
+    const [res] = await Promise.all([
+      fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: text }),
+      }),
+      runPipelineAnimation(),
+    ]);
     const data = await res.json();
     typing.remove();
     addMessage(data.reply, "bot");

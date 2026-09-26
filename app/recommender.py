@@ -59,18 +59,32 @@ class MovieRecommender:
         if not cleaned.strip():
             return []
 
+        query_tokens = set(cleaned.split())
+        vocab = self.vectorizer.vocabulary_
+
         query_vec = self.vectorizer.transform([cleaned])
         scores = cosine_similarity(query_vec, self.matrix).flatten()
 
         ranked = sorted(
-            zip(self.catalog, scores), key=lambda pair: pair[1], reverse=True
+            enumerate(scores), key=lambda pair: pair[1], reverse=True
         )
 
         results = []
-        for movie, score in ranked[:top_n]:
+        for idx, score in ranked[:top_n]:
             if score <= 0:
                 continue
-            results.append({**movie, "match": round(float(score) * 100, 1)})
+            movie = self.catalog[idx]
+            doc_tokens = set(self.corpus[idx].split())
+            matched_terms = sorted(
+                t for t in (query_tokens & doc_tokens) if t in vocab
+            )[:6]
+            results.append(
+                {
+                    **movie,
+                    "match": round(float(score) * 100, 1),
+                    "matched_terms": matched_terms,
+                }
+            )
         return results
 
     def genres_mentioned(self, query: str):

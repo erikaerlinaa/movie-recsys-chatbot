@@ -44,6 +44,31 @@
           </div>
         </div>
 
+        <div class="ai-pipeline" id="ai-pipeline">
+          <div class="pipeline-title">How CineBot thinks</div>
+          <div class="pipeline-steps">
+            <div class="pstep" data-step="parse">
+              <span class="pstep-icon">📝</span>
+              <span class="pstep-label">Parse</span>
+            </div>
+            <div class="pstep-arrow">→</div>
+            <div class="pstep" data-step="vectorize">
+              <span class="pstep-icon">🧮</span>
+              <span class="pstep-label">Vectorize</span>
+            </div>
+            <div class="pstep-arrow">→</div>
+            <div class="pstep" data-step="compare">
+              <span class="pstep-icon">📐</span>
+              <span class="pstep-label">Compare</span>
+            </div>
+            <div class="pstep-arrow">→</div>
+            <div class="pstep" data-step="rank">
+              <span class="pstep-icon">🏆</span>
+              <span class="pstep-label">Rank</span>
+            </div>
+          </div>
+        </div>
+
         <div id="chat-messages" class="chat-messages">
           <div class="msg bot">
             <div class="bubble">{{ greeting }}</div>
@@ -77,12 +102,22 @@
           {% for movie in catalog %}
           <article class="card" data-id="{{ movie.id }}" data-genre="{{ movie.genres[0] | lower }}">
             <div class="poster-wrap">
+              <img
+                class="poster-img"
+                src="{{ movie.poster }}"
+                alt="{{ movie.title }}"
+                loading="lazy"
+                referrerpolicy="no-referrer"
+                onerror="this.style.display='none'; this.nextElementSibling.classList.add('show');"
+              />
               <div class="poster-fallback">
                 <span class="poster-icon">🎬</span>
                 <span class="poster-title">{{ movie.title }}</span>
               </div>
+              <div class="match-fill" style="width:0%"></div>
               <div class="poster-overlay">
                 <p class="poster-desc">{{ movie.description }}</p>
+                <div class="matched-terms"></div>
               </div>
             </div>
             <div class="card-body">
